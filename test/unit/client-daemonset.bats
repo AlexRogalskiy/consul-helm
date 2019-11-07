@@ -109,6 +109,48 @@ load _helpers
   [ "${actual}" = "true" ]
 }
 
+@test "client/DaemonSet: grpc is enabled if connectInject.enabled=true" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-daemonset.yaml  \
+      --set 'connectInject.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | any(contains("grpc"))' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/DaemonSet: grpc is enabled if connectInject.enabled=-" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-daemonset.yaml  \
+      --set 'connectInject.enabled=-' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | any(contains("grpc"))' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/DaemonSet: grpc is enabled if connectInject.enabled=false but client.grpc=true" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-daemonset.yaml  \
+      --set 'connectInject.enabled=false' \
+      --set 'client.grpc=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | any(contains("grpc"))' | tee /dev/stderr)
+  [ "${actual}" = "true" ]
+}
+
+@test "client/DaemonSet: grpc is disabled if global.enabled=false" {
+  cd `chart_dir`
+  local actual=$(helm template \
+      -x templates/client-daemonset.yaml  \
+      --set 'global.enabled=false' \
+      --set 'client.enabled=true' \
+      . | tee /dev/stderr |
+      yq '.spec.template.spec.containers[0].command | any(contains("grpc"))' | tee /dev/stderr)
+  [ "${actual}" = "false" ]
+}
+
 #--------------------------------------------------------------------
 # resources
 
