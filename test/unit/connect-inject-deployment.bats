@@ -53,7 +53,7 @@ load _helpers
   [[ "$output" =~ "clients must be enabled for connect injection" ]]
 }
 
-@test "connectInject/Deployment: fails if global.enabled=true client.enabled=false" {
+@test "connectInject/Deployment: fails if global.enabled=true and client.enabled=false" {
   cd `chart_dir`
   run helm template \
       -x templates/connect-inject-deployment.yaml  \
