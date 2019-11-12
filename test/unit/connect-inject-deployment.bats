@@ -64,6 +64,17 @@ load _helpers
   [[ "$output" =~ "clients must be enabled for connect injection" ]]
 }
 
+@test "connectInject/Deployment: fails if global.enabled=false and client.enabled=false" {
+  cd `chart_dir`
+  run helm template \
+      -x templates/connect-inject-deployment.yaml  \
+      --set 'global.enabled=false' \
+      --set 'client.enabled=false' \
+      --set 'connectInject.enabled=true' .
+  [ "$status" -eq 1 ]
+  [[ "$output" =~ "clients must be enabled for connect injection" ]]
+}
+
 #--------------------------------------------------------------------
 # consul and envoy images
 
